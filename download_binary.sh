@@ -33,36 +33,41 @@ else
     exit 1
 fi
 
-echo "🔍 Fetching latest release info from GitHub API..."
+echo "🔍 Using verified release v0.9.1..."
 
-# Use GitHub API to get the latest release download URL
-API_URL="https://api.github.com/repos/reacherhq/check-if-email-exists/releases/latest"
-
-# Get the download URL for our binary
-DOWNLOAD_URL=$(curl -s "$API_URL" | grep "browser_download_url.*${BINARY_NAME}" | cut -d '"' -f 4)
-
-if [ -z "$DOWNLOAD_URL" ]; then
-    echo "❌ Could not find binary for ${BINARY_NAME}"
-    echo "🔄 Trying direct download from latest release..."
-    # Fallback to try v0.9.1 which we know exists
-    DOWNLOAD_URL="https://github.com/reacherhq/check-if-email-exists/releases/download/v0.9.1/${BINARY_NAME}"
-fi
+# Use known working version directly
+VERSION="v0.9.1"
+DOWNLOAD_URL="https://github.com/reacherhq/check-if-email-exists/releases/download/${VERSION}/${BINARY_NAME}"
 
 echo "📥 Downloading from: $DOWNLOAD_URL"
 
-# Download binary with follow redirects
+# Download binary with follow redirects and fail on error
 if command -v curl &> /dev/null; then
     curl -L -f -o /app/check_if_email_exists "$DOWNLOAD_URL" || {
-        echo "❌ Download failed"
+        echo "❌ Download failed with curl"
         exit 1
     }
 elif command -v wget &> /dev/null; then
     wget -O /app/check_if_email_exists "$DOWNLOAD_URL" || {
-        echo "❌ Download failed"
+        echo "❌ Download failed with wget"
         exit 1
     }
 else
     echo "❌ Neither curl nor wget is available"
+    exit 1
+fi
+
+# Verify the file is actually a binary (ELF format for Linux)
+echo "🔍 Verifying file type..."
+file_type=$(file /app/check_if_email_exists)
+echo "📄 File type: $file_type"
+
+if echo "$file_type" | grep -q "ELF.*executable"; then
+    echo "✅ Valid ELF binary detected"
+else
+    echo "❌ Downloaded file is not a valid binary!"
+    echo "File content (first 100 bytes):"
+    head -c 100 /app/check_if_email_exists
     exit 1
 fi
 
@@ -72,8 +77,8 @@ chmod +x /app/check_if_email_exists
 # Verify binary exists and is executable
 if [ -f /app/check_if_email_exists ] && [ -x /app/check_if_email_exists ]; then
     echo "✅ Binary downloaded successfully!"
-    # Try to run version check, but don't fail if it doesn't support --version
-    /app/check_if_email_exists --version 2>/dev/null || echo "✅ Binary is executable"
+    # Don't check version as it may not support --version flag
+    echo "✅ Binary is ready to use"
 else
     echo "❌ Binary verification failed"
     exit 1
