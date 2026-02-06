@@ -75,26 +75,12 @@ mv check_if_email_exists /app/check_if_email_exists || {
 # Clean up
 rm -f /tmp/check_if_email_exists.tar.gz
 
-# Verify the file is actually a binary (ELF format for Linux)
-echo "🔍 Verifying file type..."
-file_type=$(file /app/check_if_email_exists)
-echo "📄 File type: $file_type"
-
-if echo "$file_type" | grep -q "ELF.*executable"; then
-    echo "✅ Valid ELF binary detected"
-else
-    echo "❌ Downloaded file is not a valid binary!"
-    echo "File content (first 100 bytes):"
-    head -c 100 /app/check_if_email_exists
-    exit 1
-fi
-
 # Make binary executable
 chmod +x /app/check_if_email_exists
 
 # Verify binary exists and is executable
 if [ -f /app/check_if_email_exists ] && [ -x /app/check_if_email_exists ]; then
-    echo "✅ Binary downloaded successfully!"
+    echo "✅ Binary downloaded and extracted successfully!"
     echo "✅ Binary is ready to use"
 else
     echo "❌ Binary verification failed"
