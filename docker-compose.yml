@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  email-validator:
+    build: .
+    container_name: email-validator
+    ports:
+      - "8001:8001"
+    environment:
+      - FROM_EMAIL=${FROM_EMAIL:-reacher.email@gmail.com}
+      - HELLO_NAME=${HELLO_NAME:-gravityer.com}
+      - MAX_CONCURRENT=${MAX_CONCURRENT:-4}
+      - TIMEOUT_PER_EMAIL=${TIMEOUT_PER_EMAIL:-90}
+      - REQUEST_TIMEOUT_BULK=${REQUEST_TIMEOUT_BULK:-600}
+    volumes:
+      # Mount Tor data directories for persistence
+      - tor-instance1:/root/.tor/instance1
+      - tor-instance2:/root/.tor/instance2
+      - tor-instance3:/root/.tor/instance3
+      - tor-instance4:/root/.tor/instance4
+      # Mount results directory
+      - ./results:/app/results
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8001/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  tor-instance1:
+  tor-instance2:
+  tor-instance3:
+  tor-instance4:

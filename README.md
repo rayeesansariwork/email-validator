@@ -1,173 +1,269 @@
-[![Crate](https://img.shields.io/crates/v/check-if-email-exists.svg)](https://crates.io/crates/check-if-email-exists)
-[![Docs](https://docs.rs/check-if-email-exists/badge.svg)](https://docs.rs/check-if-email-exists)
-[![Docker](https://img.shields.io/docker/v/reacherhq/backend?color=0db7ed&label=docker&sort=date)](https://hub.docker.com/r/reacherhq/backend)
-[![Actions Status](https://github.com/reacherhq/check-if-email-exists/workflows/pr/badge.svg)](https://github.com/reacherhq/check-if-email-exists/actions)
+# Email Validator with Multi-Tor Proxy Rotation
 
-<br /><br />
+[![Deploy](https://img.shields.io/badge/deploy-ready-brightgreen)](https://github.com/rayeesansariwork/email-validator)
+[![Docker](https://img.shields.io/badge/docker-compose-blue)](./docker-compose.yml)
 
-<p align="center"><img align="center" src="https://storage.googleapis.com/saasify-uploads-prod/696e287ad79f0e0352bc201b36d701849f7d55e7.svg" height="96" alt="reacher" /></p>
-<h1 align="center">check-if-email-exists</h1>
-<h4 align="center">Check if an email address exists without sending any email.<br/>Comes with a <a href="./backend">⚙️ HTTP backend</a>.</h4>
+**Free, open-source email verification API with built-in IP rotation** using multiple Tor instances to avoid Google blocking during bulk verification.
 
-<br /><br /><br />
+## ✨ Features
 
-## 👉 Live Demo: https://reacher.email
+- ✅ **Email verification** without sending emails (SMTP validation)
+- 🔄 **Automatic IP rotation** using 4 Tor instances
+- 🚫 **Anti-blocking** - retries with different IPs when blacklisted
+- 🚀 **Fast bulk processing** with async/concurrent requests
+- 🐳 **Docker ready** - deploy anywhere in minutes
+- 📊 **REST API** - easy integration
+- 💰 **100% free** - no API keys or subscriptions needed
 
-<img src="https://storage.googleapis.com/saasify-uploads-prod/696e287ad79f0e0352bc201b36d701849f7d55e7.svg" height="68" align="left" />
+---
 
-This is open-source, but I also offer a **SaaS** solution that has `check-if-email-exists` packaged in a nice friendly web interface. If you are interested, find out more at [Reacher](https://reacher.email/?ref=github). If you have any questions, you can contact me at amaury@reacher.email.
+## 🚀 Quick Start with Docker
 
-<br />
+### Prerequisites
 
-## Get Started
+- Docker & Docker Compose installed
+- Server with **port 25 outbound access** (for SMTP)
 
-3 non-SaaS ways to get started with `check-if-email-exists`.
-
-### 1. ⚙️ HTTP backend using Docker (popular method 🥇) [[Full docs](./backend/README.md)]
-
-This option allows you to run a HTTP backend using Docker 🐳, on a cloud instance or your own server. Please note that outbound port 25 must be open.
-
-```bash
-docker run -p 8080:8080 reacherhq/backend:latest
-```
-
-Then send a `POST http://localhost:8080/v0/check_email` request with the following body:
-
-```js
-{
-    "to_email": "someone@gmail.com",
-    "proxy": {                        // (optional) SOCK5 proxy to run the verification through, default is empty
-        "host": "my-proxy.io",
-        "port": 1080,
-        "username": "me",             // (optional) Proxy username
-        "password": "pass"            // (optional) Proxy password
-    },
-}
-```
-
-### 2. Download the CLI [[Full docs](./cli/README.md)]
-
-> Note: The CLI binary doesn't connect to any backend, it checks the email directly from your computer.
-
-Head to the [releases page](https://github.com/reacherhq/check-if-email-exists/releases) and download the binary for your platform.
+### 1. Clone and Configure
 
 ```bash
-> $ check_if_email_exists --help
-check_if_email_exists 0.9.1
-Check if an email address exists without sending an email.
+git clone https://github.com/rayeesansariwork/email-validator.git
+cd email-validator
 
-USAGE:
-    check_if_email_exists [FLAGS] [OPTIONS] [TO_EMAIL]
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your email
+nano .env
 ```
 
-Check out the [dedicated README.md](./cli/README.md) for all options and flags.
+### 2. Start the Service
 
-### 3. Programmatic Usage [[Full docs](https://docs.rs/check-if-email-exists)]
-
-In your own Rust project, you can add `check-if-email-exists` in your `Cargo.toml`:
-
-```toml
-[dependencies]
-check-if-email-exists = "0.9"
+```bash
+docker-compose up -d
 ```
 
-And use it in your code as follows:
+**First startup takes ~3 minutes** while Tor instances bootstrap.
 
-```rust
-use check_if_email_exists::{check_email, CheckEmailInput, CheckEmailInputProxy};
+### 3. Test It
 
-async fn check() {
-    // Let's say we want to test the deliverability of someone@gmail.com.
-    let mut input = CheckEmailInput::new(vec!["someone@gmail.com".into()]);
+```bash
+# Health check
+curl http://localhost:8001/health
 
-    // Verify this email, using async/await syntax.
-    let result = check_email(&input).await;
-
-    // `result` is a `Vec<CheckEmailOutput>`, where the CheckEmailOutput
-    // struct contains all information about our email.
-    println!("{:?}", result);
-}
+# Verify an email
+curl -X POST http://localhost:8001/verify/single \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@gmail.com"}'
 ```
 
-The reference docs are hosted on [docs.rs](https://docs.rs/check-if-email-exists).
+---
 
-## ✈️ JSON Output
+## 📡 API Endpoints
 
-The output will be a JSON with the below format, the fields should be self-explanatory. For `someone@gmail.com` (note that it is disabled by Gmail), here's the exact output:
+### Single Email Verification
 
+**POST** `/verify/single`
+
+```bash
+curl -X POST http://localhost:8001/verify/single \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "someone@example.com",
+    "proxy_port": 9050,
+    "from_email": "your-email@gmail.com"
+  }'
+```
+
+**Response:**
 ```json
 {
-	"input": "someone@gmail.com",
-	"is_reachable": "invalid",
-	"misc": {
-		"is_disposable": false,
-		"is_role_account": false,
-		"is_b2c": true
-	},
-	"mx": {
-		"accepts_mail": true,
-		"records": [
-			"alt3.gmail-smtp-in.l.google.com.",
-			"gmail-smtp-in.l.google.com.",
-			"alt1.gmail-smtp-in.l.google.com.",
-			"alt4.gmail-smtp-in.l.google.com.",
-			"alt2.gmail-smtp-in.l.google.com."
-		]
-	},
-	"smtp": {
-		"can_connect_smtp": true,
-		"has_full_inbox": false,
-		"is_catch_all": false,
-		"is_deliverable": false,
-		"is_disabled": true
-	},
-	"syntax": {
-		"domain": "gmail.com",
-		"is_valid_syntax": true,
-		"username": "someone",
-		"suggestion": null
-	}
+  "email": "someone@example.com",
+  "is_reachable": "safe",
+  "mx": {
+    "accepts_mail": true,
+    "records": ["mx1.example.com"]
+  },
+  "smtp": {
+    "can_connect_smtp": true,
+    "is_deliverable": true,
+    "is_disabled": false
+  }
 }
 ```
 
-## What Does This Tool Check?
+### Bulk Email Verification (Streaming)
 
-| Included? | Feature                                       | Description                                                                                                                     | JSON field                                                                |
-| --------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| ✅        | **Email reachability**                        | How confident are we in sending an email to this address? Can be one of `safe`, `risky`, `invalid` or `unknown`.                | `is_reachable`                                                            |
-| ✅        | **Syntax validation**                         | Is the address syntactically valid?                                                                                             | `syntax.is_valid_syntax`                                                  |
-| ✅        | **DNS records validation**                    | Does the domain of the email address have valid MX DNS records?                                                                 | `mx.accepts_mail`                                                         |
-| ✅        | **Disposable email address (DEA) validation** | Is the address provided by a known [disposable email address](https://en.wikipedia.org/wiki/Disposable_email_address) provider? | `misc.is_disposable`                                                      |
-| ✅        | **SMTP server validation**                    | Can the mail exchanger of the email address domain be contacted successfully?                                                   | `smtp.can_connect_smtp`                                                   |
-| ✅        | **Email deliverability**                      | Is an email sent to this address deliverable?                                                                                   | `smtp.is_deliverable`                                                     |
-| ✅        | **Mailbox disabled**                          | Has this email address been disabled by the email provider?                                                                     | `smtp.is_disabled`                                                        |
-| ✅        | **Full inbox**                                | Is the inbox of this mailbox full?                                                                                              | `smtp.has_full_inbox`                                                     |
-| ✅        | **Catch-all address**                         | Is this email address a [catch-all](https://debounce.io/blog/help/what-is-a-catch-all-or-accept-all/) address?                  | `smtp.is_catch_all`                                                       |
-| ✅        | **Role account validation**                   | Is the email address a well-known role account?                                                                                 | `misc.is_role_account`                                                    |
-| ✅        | **Gravatar Url**                              | The url of the [Gravatar](https://gravatar.com/) email address profile picture                                                  | `misc.gravatar_url`                                                       |
-| ✅        | **Have I Been Pwned?**                        | Has this email been compromised in a [data breach](https://haveibeenpwned.com/)?                                                | `misc.haveibeenpwned`                                                     |
-| 🔜        | **Free email provider check**                 | Is the email address bound to a known free email provider?                                                                      | [Issue #89](https://github.com/reacherhq/check-if-email-exists/issues/89) |
-| 🔜        | **Syntax validation, provider-specific**      | According to the syntactic rules of the target mail provider, is the address syntactically valid?                               | [Issue #90](https://github.com/reacherhq/check-if-email-exists/issues/90) |
-| 🔜        | **Honeypot detection**                        | Does email address under test hide a [honeypot](https://en.wikipedia.org/wiki/Spamtrap)?                                        | [Issue #91](https://github.com/reacherhq/check-if-email-exists/issues/91) |
+**POST** `/verify/bulk/stream`
 
-## 🤔 Why?
+```bash
+curl -X POST http://localhost:8001/verify/bulk/stream \
+  -H "Content-Type: application/json" \
+  -d '{
+    "emails": ["email1@example.com", "email2@example.com"]
+  }'
+```
 
-Many online services (https://hunter.io, https://verify-email.org, https://email-checker.net) offer this service for a paid fee. Here is an open-source alternative to those tools.
+Returns Server-Sent Events (SSE) stream with real-time results.
 
-## License
+---
 
-`check-if-email-exists`'s source code is provided under a **dual license model**.
+## 🛠️ Local Development (without Docker)
 
-### Commercial license
+### Prerequisites
 
-If you want to use `check-if-email-exists` to develop commercial sites, tools, and applications, the Commercial License is the appropriate license. With this option, your source code is kept proprietary. Purchase a `check-if-email-exists` Commercial License at https://reacher.email/pricing.
+- Python 3.11+
+- Tor installed (`brew install tor` on Mac)
 
-### Open source license
+### Setup
 
-If you are creating an open-source application under a license compatible with the GNU Affero GPL License v3, you may use `check-if-email-exists` under the terms of the [AGPL-3.0](./LICENSE.AGPL).
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
 
-[➡️ Read more](https://docs.reacher.email/self-hosting/licensing) about Reacher's license.
+# Download the binary
+chmod +x download_binary.sh
+./download_binary.sh
 
-## 🔨 Build From Source
+# Start Tor instances
+./start_tor_instances.sh
 
-Build the [CLI from source](./cli/README.md#build-from-source) or the [HTTP backend from source](./backend/README.md#build-from-source).
+# Wait for bootstrap (2-3 minutes)
+sleep 120
+
+# Test Tor rotation
+./test_tor_rotation.sh
+
+# Start API server
+python app.py
+```
+
+---
+
+## 🌐 Server Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed guides for:
+
+- ✅ **DigitalOcean** ($6/month) - Recommended
+- ✅ **Hetzner** (€4/month) - Cheapest
+- ✅ **AWS EC2** ($5-10/month)
+- ✅ **Contabo** ($5/month)
+
+> [!WARNING]
+> **Port 25 is REQUIRED** for SMTP email verification. Platforms like Railway, Render, Heroku **won't work** because they block port 25.
+
+---
+
+## 📊 Performance
+
+| Metric | Single Tor | 4 Tor Instances (This Project) |
+|--------|------------|-------------------------------|
+| **Emails before block** | ~10-20 | ~40-100 |
+| **IP diversity** | 1 IP | 4 rotating IPs |
+| **Recovery from block** | Manual | Automatic retry |
+| **Concurrent requests** | Limited | 4x parallelization |
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Edit `.env` file:
+
+```bash
+# Your sender email
+FROM_EMAIL=your-email@gmail.com
+
+# Your domain (for SMTP HELO)
+HELLO_NAME=your-domain.com
+
+# Performance tuning
+MAX_CONCURRENT=4              # Concurrent verifications
+TIMEOUT_PER_EMAIL=90          # Timeout per email (seconds)
+REQUEST_TIMEOUT_BULK=600      # Bulk request timeout (seconds)
+```
+
+### Tor Configuration
+
+Edit `tor-configs/instance1.torrc` (and instance2-4) to customize:
+
+```
+# Rotate to new IP every 60 seconds
+MaxCircuitDirtiness 60
+
+# Faster circuit building
+CircuitBuildTimeout 10
+```
+
+---
+
+## 📖 How It Works
+
+```mermaid
+graph LR
+    A[API Request] --> B{Load Balancer}
+    B --> C[Tor Instance 1<br/>Port 9050]
+    B --> D[Tor Instance 2<br/>Port 9052]
+    B --> E[Tor Instance 3<br/>Port 9054]
+    B --> F[Tor Instance 4<br/>Port 9056]
+    
+    C --> G[Different IP 1]
+    D --> H[Different IP 2]
+    E --> I[Different IP 3]
+    F --> J[Different IP 4]
+    
+    G --> K[Gmail SMTP]
+    H --> K
+    I --> K
+    J --> K
+    
+    K -->|Response| A
+```
+
+1. **Request comes in** → API selects a Tor instance
+2. **SMTP verification** runs through that Tor proxy
+3. **If IP blocked** → Automatically retries with different instance
+4. **Tor rotates IPs** every 60 seconds automatically
+
+---
+
+## 🛑 Stopping the Service
+
+```bash
+# Docker
+docker-compose down
+
+# Local
+./stop_tor_instances.sh
+```
+
+---
+
+## 📚 Additional Resources
+
+- [Quick Start Guide](./QUICK_START.md) - Get running in 3 steps
+- [Deployment Guide](./DEPLOYMENT.md) - Detailed hosting instructions
+- [Status & Troubleshooting](./STATUS.md) - Check Tor instances
+
+---
+
+## 🙏 Credits
+
+Built on top of [check-if-email-exists](https://github.com/reacherhq/check-if-email-exists) by Reacher.
+
+---
+
+## 📝 License
+
+This project is open source. The underlying `check-if-email-exists` tool is licensed under AGPL-3.0.
+
+---
+
+## 🐛 Issues & Support
+
+Found a bug or need help? [Open an issue](https://github.com/rayeesansariwork/email-validator/issues)
+
+---
+
+**Made with ❤️ for the developer community**

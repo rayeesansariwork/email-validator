@@ -1,15 +1,37 @@
-target
-**/*.rs.bk
-.DS_Store
-private
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
 
-# docker-compose
-backend/postgres_data
-
-# Output when debugging Hotmail password recovery using a headless browser.
-hotmail.jpeg
-
-# sensitive data
-/test_suite/src/sensitive_fixtures/*.json
-run.sh
+# Environment
 .env
+
+# Results and logs
+results_rotation_*.jsonl
+results/
+*.log
+
+# Rust build artifacts (not deploying source)
+target/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Downloaded binary (will be downloaded during build)
+check_if_email_exists
+
+# Test files
+emails.txt
+test_*.py

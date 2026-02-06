@@ -1,0 +1,8 @@
+# Tor Instance 2 Configuration
+SOCKSPort 9052
+DataDirectory /root/.tor/instance2
+ControlPort 9053
+MaxCircuitDirtiness 60
+CircuitBuildTimeout 10
+LearnCircuitBuildTimeout 0
+Log notice file /root/.tor/instance2/tor.log

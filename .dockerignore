@@ -1,8 +1,56 @@
-.git
-.github
-.vscode
-ci
-target/
-Dockerfile.*
-docs/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment
 .env
+.envrc
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Results and logs
+results_rotation_*.jsonl
+*.log
+
+# Rust source (not needed in Docker)
+backend/
+cli/
+core/
+sqs/
+rabbitmq/
+target/
+Cargo.toml
+Cargo.lock
+rustfmt.toml
+Makefile
+
+# Documentation (include only deployment docs)
+docs/
+CHANGELOG.md
+.well-known/
+.sqlx/
+.editorconfig
+.gitbook.yaml
+
+# Test files
+emails.txt
+test_*.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+# Tor Instance 3 Configuration
+SOCKSPort 9054
+DataDirectory /root/.tor/instance3
+ControlPort 9055
+MaxCircuitDirtiness 60
+CircuitBuildTimeout 10
+LearnCircuitBuildTimeout 0
+Log notice file /root/.tor/instance3/tor.log

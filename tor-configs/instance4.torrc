@@ -1,0 +1,8 @@
+# Tor Instance 4 Configuration
+SOCKSPort 9056
+DataDirectory /root/.tor/instance4
+ControlPort 9057
+MaxCircuitDirtiness 60
+CircuitBuildTimeout 10
+LearnCircuitBuildTimeout 0
+Log notice file /root/.tor/instance4/tor.log

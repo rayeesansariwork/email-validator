@@ -1,0 +1,8 @@
+# Tor Instance 1 Configuration
+SOCKSPort 9050
+DataDirectory /root/.tor/instance1
+ControlPort 9051
+MaxCircuitDirtiness 60
+CircuitBuildTimeout 10
+LearnCircuitBuildTimeout 0
+Log notice file /root/.tor/instance1/tor.log
