@@ -1,4 +1,4 @@
-# 📧 Email Validator API with Multi-Tor Proxy Rotation
+#  Email Validator API with Multi-Tor Proxy Rotation
 
 <div align="center">
 
@@ -16,31 +16,31 @@
 
 ---
 
-## 🌟 Overview
+##  Overview
 
 A production-ready email validation API that verifies email addresses through comprehensive SMTP, DNS, and syntax checks. Built on top of the robust [check-if-email-exists](https://github.com/reacherhq/check-if-email-exists) CLI tool, enhanced with a FastAPI wrapper and multi-instance Tor proxy rotation for IP anonymization and rate limit bypass.
 
-### ✨ Key Features
+###  Key Features
 
-- **🔍 Comprehensive Verification**: SMTP, MX records, syntax validation, and more
-- **🔄 Advanced IP Rotation**: 4 Tor instances rotating every 5 minutes
-- **🚀 High Performance**: Concurrent verification with configurable limits
-- **🔒 Privacy-First**: All connections routed through Tor network
-- **📊 Rich Data**: Disposable email detection, role account identification
-- **🐳 Docker Ready**: One-command deployment with Docker Compose
-- **☁️ Cloud Deployable**: Optimized for DigitalOcean, Hetzner, AWS, and Koyeb
-- **💯 Free Hosting**: Successfully deployed on Koyeb free tier
+- ** Comprehensive Verification**: SMTP, MX records, syntax validation, and more
+- ** Advanced IP Rotation**: 4 Tor instances rotating every 5 minutes
+- ** High Performance**: Concurrent verification with configurable limits
+- ** Privacy-First**: All connections routed through Tor network
+- ** Rich Data**: Disposable email detection, role account identification
+- ** Docker Ready**: One-command deployment with Docker Compose
+- ** Cloud Deployable**: Optimized for DigitalOcean, Hetzner, AWS, and Koyeb
+- ** Free Hosting**: Successfully deployed on Koyeb free tier
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 
 - Docker & Docker Compose
 - OR: Python 3.10+, Tor
 
-### 🐳 Docker Deployment (Recommended)
+###  Docker Deployment (Recommended)
 
 ```bash
 # 1. Clone the repository
@@ -65,7 +65,7 @@ curl http://localhost:8001/health
 
 ---
 
-## 📖 API Documentation
+##  API Documentation
 
 ### Health Check
 
@@ -164,7 +164,7 @@ NewCircuitPeriod 300       # Rotate IP every 5 minutes
 
 ---
 
-## 🔄 How Proxy Rotation Works
+##  How Proxy Rotation Works
 
 ```mermaid
 graph LR
@@ -207,7 +207,7 @@ graph LR
 # 4. Deploy!
 ```
 
-✅ **Port 25 is open** on Koyeb - Full SMTP verification works!
+ **Port 25 is open** on Koyeb - Full SMTP verification works!
 
 [See detailed guide →](KOYEB_GUIDE.md)
 
@@ -274,14 +274,14 @@ for line in response.iter_lines():
 
 ---
 
-## 📊 Performance Metrics
+##  Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | **Average Response Time** | 5-15 seconds (SMTP verification) |
 | **Concurrent Requests** | 4 (configurable) |
 | **Memory Usage** | ~300MB (4 Tor instances) |
-| **Rate Limit Bypass** | ✅ Via IP rotation |
+| **Rate Limit Bypass** |  Via IP rotation |
 | **Success Rate** | 95%+ for valid SMTP servers |
 
 ---
@@ -337,24 +337,24 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-## 📝 Credits & Acknowledgments
+##  Credits & Acknowledgments
 
 This project is built on top of the excellent [check-if-email-exists](https://github.com/reacherhq/check-if-email-exists) CLI tool by [Reacher](https://reacherhq.com).
 
 **Enhancements added in this fork:**
-- ✨ FastAPI REST API wrapper for easy integration
-- 🔄 Multi-instance Tor proxy rotation system
-- 🐳 Production-ready Docker deployment
-- ☁️ Cloud deployment guides for multiple platforms
-- 📊 Concurrent request handling
-- 🔧 Streaming bulk verification endpoint
-- 📝 Comprehensive documentation
+-  FastAPI REST API wrapper for easy integration
+-  Multi-instance Tor proxy rotation system
+-  Production-ready Docker deployment
+-  Cloud deployment guides for multiple platforms
+-  Concurrent request handling
+-  Streaming bulk verification endpoint
+-  Comprehensive documentation
 
 **Original Project:** [reacherhq/check-if-email-exists](https://github.com/reacherhq/check-if-email-exists)
 
 ---
 
-## 📄 License
+##  License
 
 This project builds upon [check-if-email-exists](https://github.com/reacherhq/check-if-email-exists) which is licensed under AGPL-3.0. This fork maintains the same license.
 
@@ -369,17 +369,18 @@ See [LICENSE](LICENSE) for more details.
 - Email: [rayeesansari.work@gmail.com](mailto:rayeesansari.work@gmail.com)
 - GitHub: [@rayeesansariwork](https://github.com/rayeesansariwork)
 - Project: [https://github.com/rayeesansariwork/email-validator](https://github.com/rayeesansariwork/email-validator)
-- Live Demo: [https://yelping-noelani-gravityer-a1962991.koyeb.app](https://yelping-noelani-gravityer-a1962991.koyeb.app)
+- Live Demo: [https://yelping-noelani-gravityer-a1962991.koyeb.app/docs](https://yelping-noelani-gravityer-a1962991.koyeb.app/docs)
+- LinkedIn: [https://www.linkedin.com/in/mdrayeesansari](https://www.linkedin.com/in/mdrayeesansari)
 
 ---
 
-## ⭐ Support
+##  Support
 
 If you find this project useful, please consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs and issues
-- 💡 Suggesting new features
-- 🤝 Contributing to the codebase
+-  Starring the repository
+-  Reporting bugs and issues
+-  Suggesting new features
+-  Contributing to the codebase
 
 ---
 
