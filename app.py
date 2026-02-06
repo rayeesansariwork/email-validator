@@ -89,10 +89,10 @@ async def _verify_email_once(email: str, proxy_port: int, from_email: str = FROM
             return {"email": email, "error": "Timeout after {}s".format(TIMEOUT_PER_EMAIL), "is_reachable": "unknown"}
 
         if process.returncode != 0:
-            err_msg = stderr.decode().strip() or "CLI failed"
+            err_msg = stderr.decode(errors='replace').strip() or "CLI failed"
             return {"email": email, "error": err_msg, "is_reachable": "unknown"}
 
-        output = stdout.decode()
+        output = stdout.decode(errors='replace')
         cleaned = strip_ansi(output)
 
         # ── Your original JSON extraction logic ──
