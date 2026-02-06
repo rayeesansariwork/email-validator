@@ -33,22 +33,24 @@ else
     exit 1
 fi
 
-echo "🔍 Using verified release v0.9.1..."
+echo "🔍 Using latest stable release v0.11.7..."
 
-# Use known working version directly
-VERSION="v0.9.1"
-DOWNLOAD_URL="https://github.com/reacherhq/check-if-email-exists/releases/download/${VERSION}/${BINARY_NAME}"
+# Use latest working version
+VERSION="v0.11.7"
+# Binary is packaged as tar.gz
+ARCHIVE_NAME="${BINARY_NAME}.tar.gz"
+DOWNLOAD_URL="https://github.com/reacherhq/check-if-email-exists/releases/download/${VERSION}/${ARCHIVE_NAME}"
 
 echo "📥 Downloading from: $DOWNLOAD_URL"
 
-# Download binary with follow redirects and fail on error
+# Download tar.gz archive
 if command -v curl &> /dev/null; then
-    curl -L -f -o /app/check_if_email_exists "$DOWNLOAD_URL" || {
+    curl -L -f -o /tmp/check_if_email_exists.tar.gz "$DOWNLOAD_URL" || {
         echo "❌ Download failed with curl"
         exit 1
     }
 elif command -v wget &> /dev/null; then
-    wget -O /app/check_if_email_exists "$DOWNLOAD_URL" || {
+    wget -O /tmp/check_if_email_exists.tar.gz "$DOWNLOAD_URL" || {
         echo "❌ Download failed with wget"
         exit 1
     }
@@ -56,6 +58,22 @@ else
     echo "❌ Neither curl nor wget is available"
     exit 1
 fi
+
+echo "📦 Extracting binary from archive..."
+cd /tmp
+tar -xzf check_if_email_exists.tar.gz || {
+    echo "❌ Failed to extract archive"
+    exit 1
+}
+
+# Move binary to /app
+mv check_if_email_exists /app/check_if_email_exists || {
+    echo "❌ Failed to move binary"
+    exit 1
+}
+
+# Clean up
+rm -f /tmp/check_if_email_exists.tar.gz
 
 # Verify the file is actually a binary (ELF format for Linux)
 echo "🔍 Verifying file type..."
@@ -77,7 +95,6 @@ chmod +x /app/check_if_email_exists
 # Verify binary exists and is executable
 if [ -f /app/check_if_email_exists ] && [ -x /app/check_if_email_exists ]; then
     echo "✅ Binary downloaded successfully!"
-    # Don't check version as it may not support --version flag
     echo "✅ Binary is ready to use"
 else
     echo "❌ Binary verification failed"
